@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medication Knowledge & Safety Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="topline">
+    <div class="brand"><div class="logo">✚</div><div><h1>Medication Knowledge & Safety</h1><p class="subtitle">ศูนย์ความรู้ด้านยาและการใช้ยาอย่างปลอดภัย</p></div></div>
+    <span class="tag">DRUG INFORMATION CENTER</span>
+  </div>
+</header>
+
+<main>
+  <!-- ===== ค้นหายา 3 วิธี ===== -->
+  <div class="section-head"><div><h2>ค้นหายา · Find Medicine</h2><p>ไม่ทราบชื่อยาก็ค้นได้ เลือกจากอาการหรือกลุ่มยาได้เลย</p></div></div>
+  <section class="finder">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="symptom" role="tab"><span class="t-ico">🩺</span><span><b>เลือกตามอาการ</b><small>ไม่ทราบชื่อยา เริ่มจากอาการ</small></span></button>
+      <button class="tab" data-tab="category" role="tab"><span class="t-ico">🗂️</span><span><b>เลือกตามกลุ่มยา</b><small>ดูยาทั้งหมดในแต่ละกลุ่ม</small></span></button>
+      <button class="tab" data-tab="name" role="tab"><span class="t-ico">🔎</span><span><b>ค้นจากชื่อยา</b><small>ทราบชื่อยาหรือรหัสยาแล้ว</small></span></button>
+    </div>
+
+    <div class="tab-body" id="tab-symptom">
+      <div class="group-title">อาการทั่วไป</div>
+      <p class="group-sub">เลือกอาการที่ใกล้เคียงที่สุด ระบบจะแสดงยาที่เกี่ยวข้องพร้อมข้อควรระวัง</p>
+      <div class="chips" id="chipsSelf"></div>
+      <div class="group-gap">
+        <div class="group-title">🧾 โรคประจำตัว (ใช้ยาตามแพทย์สั่ง)</div>
+        <p class="group-sub" id="chronicNote"></p>
+        <div class="chips" id="chipsChronic"></div>
+      </div>
+      <div class="info-strip" id="notMappedNote"></div>
+    </div>
+
+    <div class="tab-body" id="tab-category" hidden>
+      <p class="group-sub">กลุ่มที่มีป้าย “ปรึกษาแพทย์/เภสัชกร” เป็นยาที่ต้องให้ผู้เชี่ยวชาญประเมินก่อนใช้</p>
+      <div class="cat-cards" id="catCards"></div>
+    </div>
+
+    <div class="tab-body" id="tab-name" hidden>
+      <div class="search-row">
+        <div class="searchbox"><input id="q" placeholder="พิมพ์ชื่อยา รหัสยา หรืออาการ เช่น Paracetamol, PARA500, ไอ" aria-label="ค้นหายา"></div>
+        <select id="form" aria-label="รูปแบบยา"><option value="">ทุกรูปแบบยา</option></select>
+        <button class="btn reset" id="reset">ล้างตัวกรอง</button>
+      </div>
+      <p class="search-tip">ค้นได้ทั้งชื่อสามัญ (ภาษาอังกฤษ) รหัสยา ความแรง รหัส ATC ชื่อกลุ่มยา รูปแบบยาภาษาไทย (เช่น “ครีม”, “ยาหยอดตา”) และคำที่เกี่ยวกับอาการ (เช่น “ไข้”, “ท้องเสีย”)</p>
+    </div>
+  </section>
+
+  <div id="guideBox"></div>
+
+  <!-- ===== ผลการค้นหา ===== -->
+  <div class="section-head" id="results"><div><h2>รายการยา · Drug Explorer</h2><p>คลิกแถวในตารางเพื่อดูรายละเอียดของยา</p></div></div>
+  <section class="explorer">
+    <div class="panel">
+      <h3>Drug Directory</h3><p class="hint" id="tableHint">แสดงยาทั้งหมด</p>
+      <div class="table-wrap"><table><thead><tr><th>SKU</th><th>Generic Name</th><th>Strength</th><th>Dosage Form</th><th>Category</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      <div class="countline" id="countline"></div>
+    </div>
+    <div class="panel">
+      <h3>Drug Information</h3><p class="hint">รายละเอียดรายการยาที่เลือก</p>
+      <div class="detail" id="detail"><div class="empty">เลือกรายการยาจากตารางเพื่อดูรายละเอียด</div></div>
+    </div>
+  </section>
+
+  <!-- ===== ภาพรวม ===== -->
+  <div class="section-head"><div><h2>ภาพรวมฐานข้อมูลยา · Drug Information at a Glance</h2><p>สรุปขอบเขตของรายการยาในฐานข้อมูล</p></div></div>
+  <section class="kpis" id="kpis"></section>
+
+  <div class="section-head"><div><h2>สำรวจข้อมูลยา · Drug Analytics</h2><p>การกระจายตัวของหมวดหมู่และรูปแบบยา</p></div></div>
+  <section class="grid2">
+    <div class="panel"><h3>Drug Categories Distribution</h3><p class="hint">จำนวนรายการยาในแต่ละหมวดหมู่</p><div class="bars" id="categoryBars"></div></div>
+    <div class="panel"><h3>Dosage Form Distribution</h3><p class="hint" id="formHint"></p><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><strong id="donutTotal"></strong><span>รายการยา</span></div></div><div class="legend" id="legend"></div></div></div>
+  </section>
+
+  <!-- ===== ความปลอดภัย ===== -->
+  <div class="section-head"><div><h2>Medication Safety Corner</h2><p>หลักการทั่วไปเพื่อส่งเสริมการใช้ยาอย่างปลอดภัย</p></div></div>
+  <section class="safety">
+    <article class="safety-card"><div class="ico">📋</div><h3>อ่านฉลากและเอกสารกำกับยา</h3><p>ตรวจสอบชื่อยา ความแรง รูปแบบยา วิธีใช้ และวันหมดอายุก่อนใช้ยา หากข้อมูลไม่ชัดเจนควรถามเภสัชกร</p></article>
+    <article class="safety-card"><div class="ico">⚠️</div><h3>ระวังการใช้ยาร่วมกัน</h3><p>แจ้งแพทย์หรือเภสัชกรเกี่ยวกับยา วิตามิน และผลิตภัณฑ์เสริมอาหารที่ใช้อยู่ เพื่อประเมินความเสี่ยงจากการใช้ร่วมกัน</p></article>
+    <article class="safety-card"><div class="ico">🧑‍⚕️</div><h3>ปรึกษาผู้เชี่ยวชาญ</h3><p>ไม่ปรับขนาดยา หยุดยา หรือใช้ยาของผู้อื่นด้วยตนเอง หากเกิดอาการผิดปกติหลังใช้ยาให้ขอคำแนะนำจากบุคลากรทางการแพทย์</p></article>
+  </section>
+  <div class="footer-note"><b>ข้อจำกัดของฐานข้อมูล:</b> ไฟล์ต้นฉบับมีชื่อสามัญ ความแรง รูปแบบยา หมวดหมู่ ATC Code และ Reorder Level แต่ไม่มีขนาดและวิธีใช้ ข้อห้ามใช้ ผลข้างเคียง หรือปฏิกิริยาระหว่างยา ส่วน “เลือกตามอาการ” เป็นข้อมูลทั่วไปที่จัดทำเพิ่มเพื่อช่วยค้นหา ไม่ใช่การวินิจฉัยหรือสั่งยา Dashboard นี้ไม่ใช้แทนคำแนะนำจากแพทย์หรือเภสัชกร ข้อมูล Reorder Level เป็นนโยบายสมมติของร้านยา ไม่ใช่ข้อมูลสำหรับผู้ป่วย</div>
+</main>
+
+<script src="data.js"></script>
+<script src="guide.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
